@@ -1,0 +1,32 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  datasource:
+    # Construct JDBC URL from Render Environment Variables
+    url: jdbc:postgresql://${RENDER_POSTGRES_HOSTNAME}:${RENDER_POSTGRES_PORT}/${RENDER_POSTGRES_DB}
+    username: ${RENDER_POSTGRES_USER}
+    password: ${RENDER_POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# Logging for Prod
+logging:
+  level:
+    root: INFO
+    com.bom.dsa: INFO
+
+# JWT Expiration (longer for prod if needed, keeping same for demo)
+jwt:
+  expiration: 86400000 # 24 hours

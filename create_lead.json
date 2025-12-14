@@ -1,0 +1,36 @@
+{
+    "productType": "HOME_LOAN",
+    "basicDetails": {
+        "salutation": "MR",
+        "firstName": "Test",
+        "lastName": "User",
+        "dateOfBirth": "1995-01-01",
+        "gender": "MALE",
+        "maritalStatus": "SINGLE",
+        "mobileNumber": "8888888888",
+        "emailAddress": "test.user@example.com",
+        "currentCity": "Bangalore"
+    },
+    "occupationDetails": {
+        "occupationType": "SALARIED",
+        "companyType": "MNC",
+        "employerName": "Tech Corp",
+        "designation": "Developer",
+        "totalExperience": 5.5
+    },
+    "loanDetails": {
+        "amountRequested": 3000000,
+        "repaymentPeriod": 180,
+        "homeLoanDetails": {
+            "propertyType": "APARTMENT",
+            "propertyValue": 4000000,
+            "propertyAddress": {
+                "addressLine1": "123 Tech Park",
+                "city": "Bangalore",
+                "state": "Karnataka",
+                "country": "India",
+                "pincode": "560001"
+            }
+        }
+    }
+}
