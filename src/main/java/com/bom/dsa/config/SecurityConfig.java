@@ -17,7 +17,12 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -42,6 +47,7 @@ public class SecurityConfig {
         @Bean
         public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
                 return http
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
                                                 .authenticationEntryPoint((exchange, ex) -> Mono
                                                                 .fromRunnable(() -> exchange.getResponse()
@@ -71,5 +77,18 @@ public class SecurityConfig {
                                 userDetailsService);
                 authenticationManager.setPasswordEncoder(passwordEncoder());
                 return authenticationManager;
+        }
+
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(
+                                List.of("http://localhost:5173", "https://dsa-loan-management.onrender.com"));
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+                configuration.setAllowedHeaders(List.of("*"));
+                configuration.setAllowCredentials(true);
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
         }
 }
