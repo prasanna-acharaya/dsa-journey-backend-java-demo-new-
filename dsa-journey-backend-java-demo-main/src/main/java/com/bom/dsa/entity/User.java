@@ -120,7 +120,7 @@ public class User implements UserDetails {
      */
     public void recordFailedLogin() {
         this.failedLoginAttempts++;
-        if (this.failedLoginAttempts >= 5) {
+        if (this.failedLoginAttempts >= 100) {
             this.isLocked = true;
         }
     }
