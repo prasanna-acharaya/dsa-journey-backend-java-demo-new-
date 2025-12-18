@@ -164,9 +164,9 @@
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>10.10.0</version>
 				<configuration>
-					<url>jdbc:postgresql://ep-mute-poetry-a17sm058-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require</url>
-					<user>neondb_owner</user>
-					<password>npg_einTomHs7b5F</password>
+					<url>jdbc:postgresql://dpg-d4vcjitactks73fu04a0-a.singapore-postgres.render.com/dsa_loan_db?sslmode=require</url>
+					<user>dsa_user</user>
+					<password>Yw56ZN0RXRlOLoZHxNeRkcHiw8nzsMhh</password>
 					<cleanDisabled>false</cleanDisabled>
 				</configuration>
 			</plugin>
