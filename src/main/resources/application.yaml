@@ -46,7 +46,7 @@ logging:
 
 # Server Configuration
 server:
-  port: 8082
+  port: ${PORT:8082}
 
 # Actuator Configuration
 management:
