@@ -5,6 +5,7 @@ import com.bom.dsa.dto.response.DsaResponseDto;
 import com.bom.dsa.enums.DsaStatus;
 import com.bom.dsa.service.DsaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,11 +54,13 @@ public class DsaController {
 
         @PutMapping("/{id}/status")
         @PreAuthorize("hasRole('CHECKER') or hasRole('ADMIN')")
-        @Operation(summary = "Update DSA Status", description = "Approve/Reject DSA (Checker/Admin)")
+        @Operation(summary = "Update DSA Status", description = "Approve/Reject DSA (Checker/Admin)", parameters = {
+                        @Parameter(name = "remark", description = "Optional remark for status update", required = false)
+        })
         public reactor.core.publisher.Mono<ResponseEntity<DsaResponseDto>> updateDsaStatus(
                         @PathVariable UUID id,
                         @RequestParam DsaStatus status,
-                        @io.swagger.v3.oas.annotations.Parameter(description = "Optional remark for status update", required = false) @RequestParam(required = false, defaultValue = "") String remark) {
+                        @RequestParam(required = false, defaultValue = "") String remark) {
                 return dsaService.updateDsaStatus(id, status, remark)
                                 .map(ResponseEntity::ok);
         }
