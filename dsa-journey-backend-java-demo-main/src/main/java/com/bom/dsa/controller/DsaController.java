@@ -57,7 +57,7 @@ public class DsaController {
         public reactor.core.publisher.Mono<ResponseEntity<DsaResponseDto>> updateDsaStatus(
                         @PathVariable UUID id,
                         @RequestParam DsaStatus status,
-                        @io.swagger.v3.oas.annotations.Parameter(description = "Optional remarks for status update (can be null or empty)") @RequestParam(required = false) String remarks) {
+                        @io.swagger.v3.oas.annotations.Parameter(description = "Optional remarks for status update", required = false) @RequestParam(required = false) String remarks) {
                 return dsaService.updateDsaStatus(id, status, remarks)
                                 .map(ResponseEntity::ok);
         }
