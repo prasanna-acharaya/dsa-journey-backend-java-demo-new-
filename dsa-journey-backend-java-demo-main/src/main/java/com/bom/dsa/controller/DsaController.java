@@ -54,9 +54,10 @@ public class DsaController {
         @PutMapping("/{id}/status")
         @PreAuthorize("hasRole('CHECKER') or hasRole('ADMIN')")
         @Operation(summary = "Update DSA Status", description = "Approve/Reject DSA (Checker/Admin)")
-        public reactor.core.publisher.Mono<ResponseEntity<DsaResponseDto>> updateDsaStatus(@PathVariable UUID id,
+        public reactor.core.publisher.Mono<ResponseEntity<DsaResponseDto>> updateDsaStatus(
+                        @PathVariable UUID id,
                         @RequestParam DsaStatus status,
-                        @RequestParam(required = false) String remarks) {
+                        @io.swagger.v3.oas.annotations.Parameter(description = "Optional remarks for status update (can be null or empty)") @RequestParam(required = false) String remarks) {
                 return dsaService.updateDsaStatus(id, status, remarks)
                                 .map(ResponseEntity::ok);
         }
