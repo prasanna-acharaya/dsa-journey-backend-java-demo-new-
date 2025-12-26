@@ -1,7 +1,7 @@
 package com.bom.dsa.controller;
 
-import com.bom.dsa.dto.request.DsaRequestDto;
-import com.bom.dsa.dto.response.DsaResponseDto;
+import com.bom.dsa.dto.request.*;
+import com.bom.dsa.dto.response.*;
 import com.bom.dsa.enums.DsaStatus;
 import com.bom.dsa.service.DsaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -46,6 +48,24 @@ public class DsaController {
     @Operation(summary = "Update DSA Status", description = "Approve/Reject DSA (Checker/Admin)")
     public ResponseEntity<DsaResponseDto> updateDsaStatus(@PathVariable UUID id, @RequestParam DsaStatus status) {
         return ResponseEntity.ok(dsaService.updateDsaStatus(id, status));
+    }
+
+    @PostMapping("/approval/authorize")
+    @Operation(summary = "Authorize DSA Product", description = "Finalize approval for a specific product")
+    public Mono<AuthorizeApprovalResponse> authorizeProduct(@RequestBody AuthorizeApprovalRequest request) {
+        return dsaService.authorizeDsaProduct(request);
+    }
+
+    @GetMapping("/approval/verify/{dsaId}")
+    @Operation(summary = "Verify DSA Approvals", description = "Get full list of products and their approval status")
+    public Mono<List<VerifyApprovalResponse>> verifyApprovals(@PathVariable UUID dsaId) {
+        return dsaService.verifyDsaApprovals(dsaId);
+    }
+
+    @GetMapping("/approval/pending/{userId}")
+    @Operation(summary = "Get Pending Approvals", description = "Get all staged products assigned to a manager")
+    public Mono<List<PendingApprovalResponse>> getPendingApprovals(@PathVariable String userId) {
+        return dsaService.getPendingApprovalsForUser(userId);
     }
 
     @GetMapping

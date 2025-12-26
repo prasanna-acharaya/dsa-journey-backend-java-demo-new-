@@ -26,7 +26,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-@WebFluxTest(controllers = LeadController.class)
+@WebFluxTest(controllers = LeadController.class, properties = "services.approval.base-url=http://localhost:8081")
+@org.springframework.test.context.ActiveProfiles("test")
 @org.springframework.context.annotation.Import(com.bom.dsa.config.TestSecurityConfig.class)
 class LeadControllerTest {
 

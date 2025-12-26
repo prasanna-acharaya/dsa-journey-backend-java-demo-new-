@@ -4,6 +4,8 @@ import com.bom.dsa.dto.request.CreateLeadRequest;
 import com.bom.dsa.dto.request.UpdateLeadRequest;
 import com.bom.dsa.dto.response.LeadResponse;
 import com.bom.dsa.dto.response.LeadSummaryResponse;
+import com.bom.dsa.client.ApprovalClient;
+import com.bom.dsa.dto.request.FireApprovalRequest;
 import com.bom.dsa.entity.*;
 import com.bom.dsa.enums.LeadStatus;
 import com.bom.dsa.enums.ProductType;
@@ -21,6 +23,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,11 +37,14 @@ public class LeadService {
 
     private final LeadRepository leadRepository;
     private final org.springframework.transaction.support.TransactionTemplate transactionTemplate;
+    private final ApprovalClient approvalClient;
 
     public LeadService(LeadRepository leadRepository,
-            org.springframework.transaction.PlatformTransactionManager transactionManager) {
+            org.springframework.transaction.PlatformTransactionManager transactionManager,
+            ApprovalClient approvalClient) {
         this.leadRepository = leadRepository;
         this.transactionTemplate = new org.springframework.transaction.support.TransactionTemplate(transactionManager);
+        this.approvalClient = approvalClient;
     }
 
     /**
@@ -109,6 +115,26 @@ public class LeadService {
                     throw new CustomExceptions.BusinessException("Failed to create lead: " + e.getMessage());
                 }
             });
+        }).flatMap(leadResponse -> {
+            // FIRE APPROVAL FLOW (External Service Call)
+            FireApprovalRequest approvalRequest = FireApprovalRequest.builder()
+                    .data(Map.of(
+                            "leadId", leadResponse.getLeadId().toString(),
+                            "amount", getAmountRequestedFromResponse(leadResponse),
+                            "productType", leadResponse.getProductType().toString(),
+                            "requested_by_role", "DSA", // Logic to get actual role if needed
+                            "region", "WEST" // Logic to get region from metadata
+            ))
+                    .build();
+
+            return approvalClient.fireApprovalFlow(approvalRequest)
+                    .map(resp -> {
+                        log.info("Approval flow fired successfully. Flow ID: {}", resp.getRunningFlowId());
+                        // Update lead with approval metadata if needed
+                        return leadResponse;
+                    })
+                    .switchIfEmpty(Mono.just(leadResponse)) // Ensure response is emitted even if fire returns empty
+                    .onErrorReturn(leadResponse); // Fallback to returning lead response even if approval fire fails
         }).subscribeOn(Schedulers.boundedElastic());
     }
 
@@ -734,5 +760,15 @@ public class LeadService {
             return lead.getLoanAgainstPropertyDetails().getAmountRequested();
         }
         return null;
+    }
+
+    /**
+     * Helper to extract amount from LeadResponse for approval firing.
+     */
+    private BigDecimal getAmountRequestedFromResponse(LeadResponse leadResponse) {
+        if (leadResponse.getLoanDetails() != null) {
+            return leadResponse.getLoanDetails().getAmountRequested();
+        }
+        return BigDecimal.ZERO;
     }
 }

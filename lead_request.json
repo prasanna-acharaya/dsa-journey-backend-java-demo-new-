@@ -1,0 +1,17 @@
+{
+    "productType": "VEHICLE_LOAN",
+    "basicDetails": {
+        "firstName": "Terminal",
+        "lastName": "User",
+        "dateOfBirth": "1990-01-01",
+        "gender": "Male",
+        "maritalStatus": "Single",
+        "mobileNumber": "9000000088",
+        "emailAddress": "terminal.user@example.com"
+    },
+    "occupationDetails": {
+        "occupationType": "SALARIED",
+        "employerName": "Terminal Inc",
+        "netMonthlyIncome": 50000
+    }
+}

@@ -1,5 +1,7 @@
 package com.bom.dsa.service;
 
+import com.bom.dsa.client.ApprovalClient;
+
 import com.bom.dsa.dto.request.CreateLeadRequest;
 import com.bom.dsa.dto.response.LeadResponse;
 import com.bom.dsa.entity.Lead;
@@ -36,11 +38,15 @@ public class LeadServiceTest {
         @Mock
         private PlatformTransactionManager transactionManager; // Added mock
 
+        @Mock
+        private ApprovalClient approvalClient;
+
         private LeadService leadService;
 
         @BeforeEach
         void setUp() {
-                leadService = new LeadService(leadRepository, transactionManager); // Updated constructor
+                leadService = new LeadService(leadRepository, transactionManager, approvalClient); // Updated
+                                                                                                   // constructor
         }
 
         @Test
@@ -74,6 +80,10 @@ public class LeadServiceTest {
                 // service logic,
                 // we assume repository save returns the populated object.
                 when(leadRepository.save(any(Lead.class))).thenReturn(savedLead);
+                when(approvalClient.fireApprovalFlow(any()))
+                                .thenReturn(Mono.just(com.bom.dsa.dto.response.FireApprovalResponse.builder()
+                                                .runningFlowId("flow-123")
+                                                .build()));
 
                 Mono<LeadResponse> result = leadService.createLead(request, "testUser");
 

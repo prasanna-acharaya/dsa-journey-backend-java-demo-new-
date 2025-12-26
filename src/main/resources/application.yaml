@@ -36,6 +36,12 @@ billing:
   gst-rate: 0.18
   tds-rate: 0.05
 
+# Routing & External Services
+services:
+  approval:
+    base-url: ${APPROVAL_SERVICE_URL:https://retired-rowena-thetaone-labs-524c521c.koyeb.app}
+    timeout: 5000
+
 # Logging Configuration
 logging:
   level:

@@ -19,3 +19,9 @@ spring:
   # Disable Flyway for tests (use Hibernate auto-create instead)
   flyway:
     enabled: false
+
+# Routing & External Services
+services:
+  approval:
+    base-url: http://localhost:8081
+    timeout: 5000

@@ -21,26 +21,29 @@ INSERT INTO dsa_bank_details (id, dsa_id, account_name, account_number, ifsc_cod
 ON CONFLICT (id) DO NOTHING;
 
 -- 2.2 EMPANELLED DSA (Active)
+-- Using ID from V9 fix to ensure test compatibility: b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005
 INSERT INTO ids_dsa (id, name, unique_code, mobile_number, email, status, category, city, address_line_1, constitution, gstin, pan, empanelment_date, agreement_date, agreement_period, zone_mapping, risk_score, created_by, created_at, updated_at)
 VALUES 
-('e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'Safe Loans Pvt Ltd', 'DSA_ACTIVE_001', '9876543211', 'info@safeloans.com', 'EMPANELLED', 'Company', 'Mumbai', '123 Business Park', 'Private Limited', '27AAAAA0000A1Z5', 'ABCde1234F', '2024-01-15', '2024-01-15', '3 Years', 'West Zone', 820.0, 'ADMIN001', NOW(), NOW())
-ON CONFLICT (id) DO NOTHING;
+('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'Safe Loans Pvt Ltd', 'DSA_ACTIVE_001', '9876543211', 'dsa001@example.com', 'EMPANELLED', 'Corporation', 'Mumbai', '123 Business Park', 'Private Limited', '27AAAAA0000A1Z5', 'ABCde1234F', '2024-01-15', '2024-01-15', '3 Years', 'West Zone', 820.0, 'ADMIN001', NOW(), NOW())
+ON CONFLICT (id) DO UPDATE SET 
+    unique_code = EXCLUDED.unique_code,
+    status = EXCLUDED.status;
 
 INSERT INTO dsa_products (dsa_id, product_type)
-SELECT 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'VEHICLE_LOAN'
-WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'VEHICLE_LOAN');
+SELECT 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'VEHICLE_LOAN'
+WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'VEHICLE_LOAN');
 
 INSERT INTO dsa_products (dsa_id, product_type)
-SELECT 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'EDUCATION_LOAN'
-WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'EDUCATION_LOAN');
+SELECT 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'EDUCATION_LOAN'
+WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'EDUCATION_LOAN');
 
 INSERT INTO dsa_products (dsa_id, product_type)
-SELECT 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'HOME_LOAN'
-WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'HOME_LOAN');
+SELECT 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'HOME_LOAN'
+WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'HOME_LOAN');
 
 INSERT INTO dsa_products (dsa_id, product_type)
-SELECT 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'LOAN_AGAINST_PROPERTY'
-WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'e2eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'LOAN_AGAINST_PROPERTY');
+SELECT 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'LOAN_AGAINST_PROPERTY'
+WHERE NOT EXISTS (SELECT 1 FROM dsa_products WHERE dsa_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380005' AND product_type = 'LOAN_AGAINST_PROPERTY');
 
 -- 2.3 REJECTED DSA
 INSERT INTO ids_dsa (id, name, unique_code, mobile_number, email, status, category, city, address_line_1, pan, risk_score, created_by, created_at, updated_at)

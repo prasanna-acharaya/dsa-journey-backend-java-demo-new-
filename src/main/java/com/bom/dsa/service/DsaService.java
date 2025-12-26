@@ -1,7 +1,8 @@
 package com.bom.dsa.service;
 
-import com.bom.dsa.dto.request.DsaRequestDto;
-import com.bom.dsa.dto.response.DsaResponseDto;
+import com.bom.dsa.dto.request.*;
+import com.bom.dsa.dto.response.*;
+import com.bom.dsa.client.ApprovalClient;
 import com.bom.dsa.entity.BankAccountDetails;
 import com.bom.dsa.entity.Dsa;
 import com.bom.dsa.entity.DsaDocument;
@@ -18,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 public class DsaService {
 
     private final DsaRepository dsaRepository;
+    private final ApprovalClient approvalClient;
 
     @Transactional
     public DsaResponseDto createDsa(DsaRequestDto request, String createdBy) {
@@ -84,6 +87,7 @@ public class DsaService {
         }
 
         Dsa savedDsa = dsaRepository.save(dsa);
+        stageDsaProducts(savedDsa, request);
         return mapToResponse(savedDsa);
     }
 
@@ -121,7 +125,51 @@ public class DsaService {
         }
 
         Dsa savedDsa = dsaRepository.save(dsa);
+        stageDsaProducts(savedDsa, request);
         return mapToResponse(savedDsa);
+    }
+
+    private void stageDsaProducts(Dsa savedDsa, DsaRequestDto request) {
+        if (request.getProducts() != null && !request.getProducts().isEmpty()) {
+            StageApprovalRequest stageRequest = StageApprovalRequest.builder()
+                    .dsaId(savedDsa.getId().toString())
+                    .products(request.getProducts().stream()
+                            .map(Enum::name)
+                            .collect(Collectors.toList()))
+                    .build();
+
+            log.info("Triggering product staging for DSA: {} with {} products", savedDsa.getId(),
+                    request.getProducts().size());
+            approvalClient.stageApprovals(stageRequest).subscribe();
+        }
+    }
+
+    public Mono<AuthorizeApprovalResponse> authorizeDsaProduct(AuthorizeApprovalRequest request) {
+        return approvalClient.authorizeApproval(request);
+    }
+
+    public Mono<List<VerifyApprovalResponse>> verifyDsaApprovals(UUID dsaId) {
+        return approvalClient.verifyApprovals(dsaId.toString());
+    }
+
+    public Mono<List<PendingApprovalResponse>> getPendingApprovalsForUser(String userId) {
+        return approvalClient.getPendingApprovals(userId)
+                .map(rawList -> rawList.stream()
+                        .map(raw -> {
+                            Dsa dsa = dsaRepository.findById(UUID.fromString(raw.getDsaId())).orElse(null);
+                            return PendingApprovalResponse.builder()
+                                    .id(raw.getId())
+                                    .dsaId(raw.getDsaId())
+                                    .dsaName(dsa != null ? dsa.getName() : "Unknown")
+                                    .dsaUniqueCode(dsa != null ? dsa.getUniqueCode() : "N/A")
+                                    .userId(raw.getUserId())
+                                    .productType(raw.getProductType())
+                                    .approvedAt(raw.getApprovedAt() != null
+                                            ? java.time.LocalDateTime.parse(raw.getApprovedAt())
+                                            : null)
+                                    .build();
+                        })
+                        .collect(Collectors.toList()));
     }
 
     @Transactional

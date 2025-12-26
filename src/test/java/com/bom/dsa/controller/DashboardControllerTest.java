@@ -16,7 +16,8 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@WebFluxTest(controllers = DashboardController.class)
+@WebFluxTest(controllers = DashboardController.class, properties = "services.approval.base-url=http://localhost:8081")
+@org.springframework.test.context.ActiveProfiles("test")
 @org.springframework.context.annotation.Import(com.bom.dsa.config.TestSecurityConfig.class)
 class DashboardControllerTest {
 
