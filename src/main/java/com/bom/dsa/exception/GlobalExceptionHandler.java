@@ -113,6 +113,24 @@ public class GlobalExceptionHandler {
         }
 
         /**
+         * Handle Spring Security AccessDenied methods.
+         */
+        @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+        public Mono<ResponseEntity<ErrorResponse>> handleAccessDeniedException(
+                        org.springframework.security.access.AccessDeniedException ex) {
+                log.warn("Access denied: {}", ex.getMessage());
+
+                ErrorResponse error = ErrorResponse.builder()
+                                .status(HttpStatus.FORBIDDEN.value())
+                                .error("Forbidden")
+                                .message("You do not have permission to access this resource")
+                                .timestamp(Instant.now())
+                                .build();
+
+                return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).body(error));
+        }
+
+        /**
          * Handle duplicate resource exceptions.
          */
         @ExceptionHandler(CustomExceptions.DuplicateResourceException.class)
