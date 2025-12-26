@@ -37,7 +37,7 @@ public class DashboardController {
     }
 
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANK_MANAGER')")
     @Operation(summary = "Get Admin Dashboard Analytics", description = "Get overall dashboard analytics (Admin only)")
     public Mono<ResponseEntity<DashboardAnalyticsResponse>> getAdminDashboardAnalytics() {
         log.info("Fetching admin dashboard analytics");
