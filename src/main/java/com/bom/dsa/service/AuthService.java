@@ -111,6 +111,7 @@ public class AuthService implements ReactiveUserDetailsService {
                                 .accessToken(token)
                                 .tokenType("Bearer")
                                 .expiresIn(jwtTokenProvider.getExpirationTime())
+                                .userId(user.getId())
                                 .username(user.getUsername())
                                 .dsaUniqueCode(user.getDsaUniqueCode())
                                 .fullName(user.getFullName())

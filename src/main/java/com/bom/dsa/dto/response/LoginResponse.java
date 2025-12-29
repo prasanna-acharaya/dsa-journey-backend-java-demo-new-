@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Response DTO for login.
@@ -19,6 +20,7 @@ public class LoginResponse {
     private String accessToken;
     private String tokenType;
     private Long expiresIn;
+    private UUID userId;
     private String username;
     private String dsaUniqueCode;
     private String fullName;
